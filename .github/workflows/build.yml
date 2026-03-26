@@ -13,21 +13,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache Theos
-        id: cache-theos
-        uses: actions/cache@v4
-        with:
-          path: theos
-          key: theos-rootless-v1
+      - name: Fix Node.js deprecation warning
+        run: echo "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true" >> $GITHUB_ENV
 
-      - name: Install Theos
-        uses: Randomblock1/theos-action@v1
-        with:
-          orion: 'false'
+      - name: Install Theos (أحدث نسخة)
+        uses: beerpiss/theos-action@v1
+
+      - name: Debug - List all files
+        run: ls -la
 
       - name: Build the tweak
         run: |
-          make clean
+          make clean || true
           make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
 
       - name: Upload .deb artifact
