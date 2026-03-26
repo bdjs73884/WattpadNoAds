@@ -7,13 +7,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04   # ← هذا التعديل المهم
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Theos (بدون cache)
+      - name: Setup Theos
         uses: Randomblock1/theos-action@v1
         with:
           orion: 'false'
