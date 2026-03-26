@@ -1,0 +1,38 @@
+name: Build WattpadNoAds
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Theos
+        id: cache-theos
+        uses: actions/cache@v4
+        with:
+          path: theos
+          key: theos-rootless-v1
+
+      - name: Install Theos
+        uses: Randomblock1/theos-action@v1
+        with:
+          orion: 'false'
+
+      - name: Build the tweak
+        run: |
+          make clean
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WattpadNoAds-Deb
+          path: packages/*.deb
+          if-no-files-found: error
