@@ -2,13 +2,6 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-// إعلان الكلاسات عشان Theos يعرفها
-%class GADBannerView;
-%class GADInterstitialAd;
-%class GADNativeAdView;
-%class _GADAdView;
-%class GADAdView;
-
 %hook GADBannerView
 - (void)layoutSubviews {
     %orig;
@@ -71,5 +64,5 @@
 %end
 
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v3 Loaded Successfully - All ads blocked!");
+    NSLog(@"🚀 WattpadNoAds v4 Loaded Successfully - All ads blocked!");
 }
