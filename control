@@ -1,0 +1,9 @@
+Package: com.yourname.wattpadnoads
+Name: Wattpad No Ads
+Version: 1.0
+Architecture: iphoneos-arm64
+Description: Hide all advertisements in Wattpad app
+Maintainer: You
+Author: You
+Section: Tweaks
+Depends: mobilesubstrate
