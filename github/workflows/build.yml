@@ -13,23 +13,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fix Node.js deprecation warning
-        run: echo "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true" >> $GITHUB_ENV
-
-      - name: Install Theos (أحدث نسخة)
-        uses: beerpiss/theos-action@v1
-
-      - name: Debug - List all files
-        run: ls -la
+      - name: Setup Theos (بدون cache)
+        uses: Randomblock1/theos-action@v1
+        with:
+          orion: 'false'
 
       - name: Build the tweak
         run: |
-          make clean || true
-          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          make clean
+          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
         with:
           name: WattpadNoAds-Deb
           path: packages/*.deb
-          if-no-files-found: error
