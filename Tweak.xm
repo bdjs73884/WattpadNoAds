@@ -25,13 +25,7 @@
 
 %hook GADInterstitialAd
 + (void)loadWithAdUnitID:(NSString *)adUnitID request:(id)request completionHandler:(id)handler {
-    NSLog(@"[WattpadNoAds] Interstitial load blocked");
-}
-
-// هذا الـ hook الجديد والقوي يمنع عرض الإعلان بين البارتات
-- (void)presentFromRootViewController:(UIViewController *)rootViewController {
-    NSLog(@"[WattpadNoAds] Blocked interstitial presentation between chapters");
-    // ما يعرض الإعلان أبدًا
+    NSLog(@"[WattpadNoAds] Interstitial blocked");
 }
 %end
 
@@ -60,6 +54,25 @@
 }
 %end
 
+// الـ hook الجديد والقوي عشان ThingsBook
+%hook UIViewController
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion {
+    NSString *className = NSStringFromClass([viewControllerToPresent class]);
+    NSString *title = viewControllerToPresent.title ?: @"";
+    
+    if ([className containsString:@"Ad"] || 
+        [className containsString:@"Promotion"] || 
+        [className containsString:@"Interstitial"] ||
+        [title containsString:@"ThingsBook"] || 
+        [className containsString:@"ThingsBook"]) {
+        
+        NSLog(@"[WattpadNoAds] BLOCKED ThingsBook Promo Ad between chapters!");
+        return;   // ما يعرض الإعلان أبدًا
+    }
+    %orig;
+}
+%end
+
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v9 FINAL - All ads & inter-chapter ads blocked!");
+    NSLog(@"🚀 WattpadNoAds v10 FINAL - All ads including ThingsBook blocked!");
 }
