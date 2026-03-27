@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-// تعريفات الكلاسات فقط
+// تعريفات الكلاسات
 @interface GADBannerView : UIView @end
 @interface GADInterstitialAd : NSObject @end
 @interface GADNativeAdView : UIView @end
@@ -25,7 +25,13 @@
 
 %hook GADInterstitialAd
 + (void)loadWithAdUnitID:(NSString *)adUnitID request:(id)request completionHandler:(id)handler {
-    NSLog(@"[WattpadNoAds] Interstitial blocked");
+    NSLog(@"[WattpadNoAds] Interstitial load blocked");
+}
+
+// هذا الـ hook الجديد والقوي يمنع عرض الإعلان بين البارتات
+- (void)presentFromRootViewController:(UIViewController *)rootViewController {
+    NSLog(@"[WattpadNoAds] Blocked interstitial presentation between chapters");
+    // ما يعرض الإعلان أبدًا
 }
 %end
 
@@ -55,5 +61,5 @@
 %end
 
 %ctor {
-    NSLog(@"🚀 WattpadNoAds SAFE v8 LOADED - Only ad classes hooked");
+    NSLog(@"🚀 WattpadNoAds v9 FINAL - All ads & inter-chapter ads blocked!");
 }
