@@ -2,6 +2,13 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 
+// تعريفات كاملة عشان الـ compiler يعرف الخصائص
+@interface GADBannerView : UIView @end
+@interface GADInterstitialAd : NSObject @end
+@interface GADNativeAdView : UIView @end
+@interface _GADAdView : UIView @end
+@interface GADAdView : UIView @end
+
 %hook GADBannerView
 - (void)layoutSubviews {
     %orig;
@@ -64,5 +71,5 @@
 %end
 
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v4 Loaded Successfully - All ads blocked!");
+    NSLog(@"🚀 WattpadNoAds v5 Loaded Successfully - All ads blocked!");
 }
