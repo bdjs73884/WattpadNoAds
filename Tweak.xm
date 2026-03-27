@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-// تعريفات الكلاسات
+// تعريفات الكلاسات فقط
 @interface GADBannerView : UIView @end
 @interface GADInterstitialAd : NSObject @end
 @interface GADNativeAdView : UIView @end
@@ -54,22 +54,6 @@
 }
 %end
 
-%hook UIView
-- (void)didMoveToWindow {
-    %orig;
-    NSString *className = NSStringFromClass([self class]);
-    if ([className containsString:@"GAD"] ||
-        [className containsString:@"AdView"] ||
-        [className containsString:@"AdBanner"] ||
-        (CGRectGetHeight(self.frame) <= 100 && CGRectGetHeight(self.frame) >= 50)) {
-        self.hidden = YES;
-        self.alpha = 0;
-        [self removeFromSuperview];
-        NSLog(@"[WattpadNoAds] Removed ad: %@", className);
-    }
-}
-%end
-
 %ctor {
-    NSLog(@"🚀 WattpadNoAds FINAL v7 LOADED - All ads should be hidden now!");
+    NSLog(@"🚀 WattpadNoAds SAFE v8 LOADED - Only ad classes hooked");
 }
