@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-// تعريفات كاملة عشان الـ compiler يعرف الخصائص
+// تعريفات الكلاسات
 @interface GADBannerView : UIView @end
 @interface GADInterstitialAd : NSObject @end
 @interface GADNativeAdView : UIView @end
@@ -71,5 +71,8 @@
 %end
 
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v5 Loaded Successfully - All ads blocked!");
+    NSLog(@"🚀 WattpadNoAds CRASH TEST - Tweak is LOADED and INJECTED!");
+    
+    // هنا الكراش المتعمد (عشان تتأكد إنه يشتغل)
+    [NSException raise:@"WattpadNoAdsCrashTest" format:@"✅ التويك يعمل! WattpadNoAds injected successfully."];
 }
