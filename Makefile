@@ -1,5 +1,7 @@
 include $(THEOS)/makefiles/common.mk
-THEOS_DEPLOYMENT_TARGET = 26.0
+export TARGET = iphone:clang:latest:26.0
+SDKVERSION = 26.0
+TARGET_OS_DEPLOYMENT_VERSION = 26.0
 
 THEOS_PACKAGE_SCHEME = rootless   # مهم جداً
 
