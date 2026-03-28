@@ -64,7 +64,7 @@
 %end
 
 // ======================
-// Liquid Glass Popup (iOS 26 style)
+// Custom Liquid Glass Popup (أقرب شكل ممكن)
 // ======================
 %ctor {
     NSLog(@"🚀 WattpadNoAds v16 FINAL - All ads blocked + Liquid Glass Message");
@@ -76,14 +76,12 @@
         UIViewController *topVC = window.rootViewController;
         while (topVC.presentedViewController) topVC = topVC.presentedViewController;
 
-        // Glass Container
-        UIView *glass = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
-        glass.center = CGPointMake(window.bounds.size.width/2, window.bounds.size.height/2 - 30);
-        glass.layer.cornerRadius = 28;
-        glass.layer.masksToBounds = YES;
-        glass.alpha = 0;
+        UIView *glassView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
+        glassView.center = CGPointMake(window.bounds.size.width/2, window.bounds.size.height/2 - 30);
+        glassView.layer.cornerRadius = 28;
+        glassView.layer.masksToBounds = YES;
+        glassView.alpha = 0;
 
-        // Liquid Glass Effect
         UIBlurEffect *blur;
         if (@available(iOS 13.0, *)) {
             blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
@@ -92,17 +90,15 @@
         }
 
         UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blur];
-        blurView.frame = glass.bounds;
+        blurView.frame = glassView.bounds;
         blurView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [glass addSubview:blurView];
+        [glassView addSubview:blurView];
 
-        // Vibrancy للنص (يجعله أكثر شفافية ولمعان)
         UIVibrancyEffect *vibrancy = [UIVibrancyEffect effectForBlurEffect:blur];
         UIVisualEffectView *vibrancyView = [[UIVisualEffectView alloc] initWithEffect:vibrancy];
-        vibrancyView.frame = glass.bounds;
+        vibrancyView.frame = glassView.bounds;
         vibrancyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-        // Title
         UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(20, 25, 280, 32)];
         title.text = @"Wattpad No Ads";
         title.textAlignment = NSTextAlignmentCenter;
@@ -110,7 +106,6 @@
         title.textColor = [UIColor whiteColor];
         [vibrancyView.contentView addSubview:title];
 
-        // Message
         UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(20, 65, 280, 80)];
         msg.text = @"✅ التويك شغال 100%%\ninstagram: hsm__200";
         msg.textAlignment = NSTextAlignmentCenter;
@@ -119,25 +114,23 @@
         msg.textColor = [UIColor whiteColor];
         [vibrancyView.contentView addSubview:msg];
 
-        [glass addSubview:vibrancyView];
+        [glassView addSubview:vibrancyView];
 
-        // OK Button (شفاف وحديث)
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
         btn.frame = CGRectMake(35, 150, 250, 48);
         [btn setTitle:@"OK" forState:UIControlStateNormal];
         btn.titleLabel.font = [UIFont systemFontOfSize:18 weight:UIFontWeightSemibold];
         btn.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.18];
         btn.layer.cornerRadius = 24;
-        [btn addTarget:glass action:@selector(removeFromSuperview) forControlEvents:UIControlEventTouchUpInside];
-        [glass addSubview:btn];
+        [btn addTarget:glassView action:@selector(removeFromSuperview) forControlEvents:UIControlEventTouchUpInside];
+        [glassView addSubview:btn];
 
-        [window addSubview:glass];
+        [window addSubview:glassView];
 
-        // Animation ناعمة
-        glass.transform = CGAffineTransformMakeScale(0.8, 0.8);
+        glassView.transform = CGAffineTransformMakeScale(0.85, 0.85);
         [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.75 initialSpringVelocity:0.6 options:0 animations:^{
-            glass.alpha = 1;
-            glass.transform = CGAffineTransformIdentity;
+            glassView.alpha = 1;
+            glassView.transform = CGAffineTransformIdentity;
         } completion:nil];
     });
 }
