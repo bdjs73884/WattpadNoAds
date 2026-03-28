@@ -1,4 +1,4 @@
-name: Build WattpadNoAds (Custom iOS 26 SDK)
+name: Build WattpadNoAds (iOS 26 SDK via sparse checkout)
 
 on:
   push:
@@ -21,14 +21,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-theos-
 
-      - name: Setup Theos with custom SDK repo
+      - name: Setup Theos
         uses: Randomblock1/theos-action@v1
         with:
           orion: 'false'
           theos-dir: 'theos'
           theos-src: 'https://github.com/theos/theos'
-          theos-sdks: 'https://github.com/xybp888/iOS-SDKs'
+          theos-sdks: 'https://github.com/theos/sdks'
           theos-sdks-branch: 'master'
+
+      - name: Fetch only iPhoneOS26.4.sdk
+        env:
+          THEOS: ${{ github.workspace }}/theos
+        run: |
+          rm -rf sdkrepo
+          git clone --filter=blob:none --no-checkout https://github.com/xybp888/iOS-SDKs.git sdkrepo
+          cd sdkrepo
+          git sparse-checkout init --cone
+          git sparse-checkout set iPhoneOS26.4.sdk
+          git checkout master
+          cd ..
+
+          mkdir -p "$THEOS/sdks"
+          rm -rf "$THEOS/sdks"/iPhoneOS26*.sdk
+          cp -R sdkrepo/iPhoneOS26.4.sdk "$THEOS/sdks/"
 
       - name: Show installed SDKs
         env:
@@ -40,10 +56,6 @@ jobs:
         env:
           THEOS: ${{ github.workspace }}/theos
         run: |
-          test -d "$THEOS/sdks/iPhoneOS26.0.sdk" || \
-          test -d "$THEOS/sdks/iPhoneOS26.1.sdk" || \
-          test -d "$THEOS/sdks/iPhoneOS26.2.sdk" || \
-          test -d "$THEOS/sdks/iPhoneOS26.3.sdk" || \
           test -d "$THEOS/sdks/iPhoneOS26.4.sdk"
 
       - name: Build the tweak
