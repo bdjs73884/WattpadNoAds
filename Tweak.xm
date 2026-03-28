@@ -64,7 +64,7 @@
 %end
 
 // ======================
-// Liquid Glass Popup حقيقي (iOS 26)
+// Real Liquid Glass (iOS 26) مع fallback آمن
 // ======================
 %ctor {
     NSLog(@"🚀 WattpadNoAds v17 FINAL - All ads blocked + Real Liquid Glass");
@@ -76,14 +76,13 @@
         UIViewController *topVC = window.rootViewController;
         while (topVC.presentedViewController) topVC = topVC.presentedViewController;
 
-        // Glass Container
         UIView *glassView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
         glassView.center = CGPointMake(window.bounds.size.width/2, window.bounds.size.height/2 - 30);
         glassView.layer.cornerRadius = 28;
         glassView.layer.masksToBounds = YES;
         glassView.alpha = 0;
 
-        // Real Liquid Glass Effect
+        // Real Liquid Glass إذا كان الجهاز iOS 26+
         if (@available(iOS 26.0, *)) {
             UIGlassEffect *glassEffect = [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
             UIVisualEffectView *glassBlur = [[UIVisualEffectView alloc] initWithEffect:glassEffect];
@@ -91,7 +90,7 @@
             glassBlur.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             [glassView addSubview:glassBlur];
         } else {
-            // Fallback للإصدارات الأقدم
+            // Fallback أفضل blur ممكن
             UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
             UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blur];
             blurView.frame = glassView.bounds;
