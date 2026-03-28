@@ -32,12 +32,11 @@
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; }
 %end
 
-// 🔥 الـ hook الخاص بـ ThingsBook (الداخلي)
-%hook UIView
-- (void)addSubview:(UIView *)subview {
-    %orig(subview);
+// دالة مساعدة تبحث داخل كل الـ subviews بشكل عميق
+static void hideThingsBookAd(UIView *view) {
+    if (!view) return;
 
-    NSString *className = NSStringFromClass([subview class]);
+    NSString *className = NSStringFromClass([view class]);
 
     if ([className containsString:@"Things"] ||
         [className containsString:@"Journal"] ||
@@ -45,27 +44,47 @@
         [className containsString:@"Ad"] ||
         [className containsString:@"Banner"]) {
 
-        // نبحث داخل النصوص أيضاً
-        for (UIView *child in subview.subviews) {
+        // نبحث داخل النصوص
+        for (UIView *child in view.subviews) {
             if ([child isKindOfClass:[UILabel class]]) {
                 UILabel *label = (UILabel *)child;
-                if ([label.text containsString:@"ThingsBook"] ||
-                    [label.text containsString:@"journal"] ||
-                    [label.text containsString:@"Things"] ||
-                    [label.text containsString:@"Things"]) {
+                NSString *text = label.text ?: @"";
+                if ([text containsString:@"ThingsBook"] ||
+                    [text containsString:@"journal"] ||
+                    [text containsString:@"Things"] ||
+                    [text containsString:@"veD3"] ||
+                    [text containsString:@"onelink"]) {
 
-                    NSLog(@"[WattpadNoAds] BLOCKED ThingsBook House Ad between chapters!");
-                    subview.hidden = YES;
-                    subview.alpha = 0;
-                    [subview removeFromSuperview];
+                    NSLog(@"[WattpadNoAds] BLOCKED ThingsBook House Ad (recursive)!");
+                    view.hidden = YES;
+                    view.alpha = 0;
+                    [view removeFromSuperview];
                     return;
                 }
             }
+            hideThingsBookAd(child); // بحث عميق
         }
     }
+}
+
+// الـ hooks القوية
+%hook UIView
+- (void)addSubview:(UIView *)subview {
+    %orig(subview);
+    hideThingsBookAd(subview);
+}
+
+- (void)insertSubview:(UIView *)subview atIndex:(NSInteger)index {
+    %orig(subview, index);
+    hideThingsBookAd(subview);
+}
+
+- (void)bringSubviewToFront:(UIView *)subview {
+    %orig(subview);
+    hideThingsBookAd(subview);
 }
 %end
 
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v11 FINAL - ThingsBook house ads blocked!");
+    NSLog(@"🚀 WattpadNoAds v12 FINAL - ThingsBook house ads blocked recursively!");
 }
