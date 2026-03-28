@@ -64,7 +64,7 @@
 %end
 
 // ======================
-// الكود الجديد من GPT (الأفضل لعرض الرسالة)
+// الكود الجديد (مع @available عشان ما يفشل البناء)
 // ======================
 static UIViewController *HSMTopViewControllerFrom(UIViewController *vc) {
     if (!vc) return nil;
@@ -80,42 +80,13 @@ static UIViewController *HSMTopViewControllerFrom(UIViewController *vc) {
     return vc;
 }
 
-static UIWindow *HSMGetActiveKeyWindow(void) {
-    UIApplication *app = [UIApplication sharedApplication];
-    for (UIScene *scene in app.connectedScenes) {
-        if (![scene isKindOfClass:[UIWindowScene class]]) continue;
-        if (scene.activationState != UISceneActivationStateForegroundActive) continue;
-        UIWindowScene *windowScene = (UIWindowScene *)scene;
-        for (UIWindow *window in windowScene.windows) {
-            if (window.isKeyWindow) return window;
-        }
-        if (windowScene.windows.count > 0) return windowScene.windows.firstObject;
-    }
-    return nil;
-}
-
-static void HSMPresentWelcomeAlert(NSInteger retriesLeft) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIWindow *window = HSMGetActiveKeyWindow();
+static void HSMPresentWelcomeAlert(void) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        if (!window) return;
+        
         UIViewController *topVC = HSMTopViewControllerFrom(window.rootViewController);
-
-        if (!topVC) {
-            if (retriesLeft > 0) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    HSMPresentWelcomeAlert(retriesLeft - 1);
-                });
-            }
-            return;
-        }
-
-        if (topVC.presentedViewController) {
-            if (retriesLeft > 0) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    HSMPresentWelcomeAlert(retriesLeft - 1);
-                });
-            }
-            return;
-        }
+        if (!topVC || topVC.presentedViewController) return;
 
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Wattpad No Ads"
             message:@"✅ التويك شغال 100%%\n\ninstagram: hsm__200"
@@ -131,8 +102,6 @@ static void HSMPresentWelcomeAlert(NSInteger retriesLeft) {
 %ctor {
     NSLog(@"🚀 WattpadNoAds v15 FINAL LOADED - All ads blocked + Welcome message");
 
-    // عرض الرسالة بعد 1.5 ثانية (مع retries)
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        HSMPresentWelcomeAlert(6);   // 6 محاولات كحد أقصى
-    });
+    // عرض الرسالة
+    HSMPresentWelcomeAlert();
 }
