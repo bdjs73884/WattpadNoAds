@@ -1,4 +1,4 @@
-name: Build WattpadNoAds
+name: Build WattpadNoAds (Custom iOS 26 SDK)
 
 on:
   push:
@@ -7,21 +7,41 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: macos-14
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Theos
+      - name: Cache Theos and SDKs
+        uses: actions/cache@v4
+        with:
+          path: |
+            theos
+          key: ${{ runner.os }}-theos-${{ hashFiles('.github/workflows/*.yml', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-theos-
+
+      - name: Setup Theos with custom SDK repo
         uses: Randomblock1/theos-action@v1
         with:
           orion: 'false'
+          theos-dir: 'theos'
+          theos-src: 'https://github.com/theos/theos'
+          theos-sdks: 'https://github.com/YOUR_USERNAME/YOUR_IOS_SDKS_REPO'
+          theos-sdks-branch: 'main'
 
-      - name: Build the tweak
+      - name: Verify installed SDKs
+        run: |
+          ls -la theos/sdks
+          test -d theos/sdks/iPhoneOS26.0.sdk || test -d theos/sdks/iPhoneOS26.1.sdk || test -d theos/sdks/iPhoneOS26.2.sdk
+
+      - name: Build
+        env:
+          THEOS: ${{ github.workspace }}/theos
         run: |
           make clean
-          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 THEOS_DEPLOYMENT_TARGET=26.0
+          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
