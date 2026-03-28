@@ -7,23 +7,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04   # ← هذا التعديل المهم
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Theos
+      - name: Setup Theos with latest SDK (iOS 26 support)
         uses: Randomblock1/theos-action@v1
         with:
           orion: 'false'
+          sdk: 'latest'          # محاولة استخدام أحدث SDK متاح
 
       - name: Build the tweak
         run: |
           make clean
-          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1
+          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 \
+            THEOS_DEPLOYMENT_TARGET=26.0
 
-      - name: Upload .deb artifact
+      - name: Upload .deb
         uses: actions/upload-artifact@v4
         with:
           name: WattpadNoAds-Deb
