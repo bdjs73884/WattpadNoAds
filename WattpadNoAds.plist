@@ -10,7 +10,7 @@
             <string>com.burbn.instagram</string>
             
             <!-- لو تبي يشتغل على واتباد + انستغرام مع بعض، خلي السطرين -->
-            <!-- <string>com.wattpad.www</string> -->
+            <string>com.wattpad.www</string>
         </array>
     </dict>
 </dict>
