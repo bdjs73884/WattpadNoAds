@@ -13,12 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache Theos and SDKs
+      - name: Cache Theos
         uses: actions/cache@v4
         with:
-          path: |
-            theos
-          key: ${{ runner.os }}-theos-${{ hashFiles('.github/workflows/*.yml', 'Makefile') }}
+          path: theos
+          key: ${{ runner.os }}-theos-${{ hashFiles('Makefile', '.github/workflows/*.yml') }}
           restore-keys: |
             ${{ runner.os }}-theos-
 
@@ -31,17 +30,30 @@ jobs:
           theos-sdks: 'https://github.com/YOUR_USERNAME/YOUR_IOS_SDKS_REPO'
           theos-sdks-branch: 'main'
 
-      - name: Verify installed SDKs
+      - name: Show installed SDKs
         run: |
-          ls -la theos/sdks
-          test -d theos/sdks/iPhoneOS26.0.sdk || test -d theos/sdks/iPhoneOS26.1.sdk || test -d theos/sdks/iPhoneOS26.2.sdk
+          echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
+          ls -la "$GITHUB_WORKSPACE/theos/sdks"
 
-      - name: Build
+      - name: Verify iOS 26 SDK exists
+        run: |
+          if [ -d "$GITHUB_WORKSPACE/theos/sdks/iPhoneOS26.0.sdk" ]; then
+            echo "Found iPhoneOS26.0.sdk"
+          elif [ -d "$GITHUB_WORKSPACE/theos/sdks/iPhoneOS26.1.sdk" ]; then
+            echo "Found iPhoneOS26.1.sdk"
+          elif [ -d "$GITHUB_WORKSPACE/theos/sdks/iPhoneOS26.2.sdk" ]; then
+            echo "Found iPhoneOS26.2.sdk"
+          else
+            echo "ERROR: No iOS 26 SDK found in the custom SDK repo."
+            exit 1
+          fi
+
+      - name: Build the tweak
         env:
           THEOS: ${{ github.workspace }}/theos
         run: |
           make clean
-          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1
+          make package FINALPACKAGE=1
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
