@@ -1,5 +1,5 @@
 include $(THEOS)/makefiles/common.mk
-THEOS_DEPLOYMENT_TARGET = 15.0
+THEOS_DEPLOYMENT_TARGET = 26.0
 
 THEOS_PACKAGE_SCHEME = rootless   # مهم جداً
 
