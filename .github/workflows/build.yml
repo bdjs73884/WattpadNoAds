@@ -1,4 +1,4 @@
-name: Build WattpadNoAds (iOS 26 SDK via sparse checkout)
+name: Build WattpadNoAds (iOS 26 SDK fixed)
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
       - name: Cache Theos
         uses: actions/cache@v4
         with:
-          path: theos
+          path: ${{ github.workspace }}/theos
           key: ${{ runner.os }}-theos-${{ hashFiles('Makefile', '.github/workflows/*.yml') }}
           restore-keys: |
             ${{ runner.os }}-theos-
@@ -25,14 +25,15 @@ jobs:
         uses: Randomblock1/theos-action@v1
         with:
           orion: 'false'
-          theos-dir: 'theos'
+          theos-dir: '${{ github.workspace }}/theos'
           theos-src: 'https://github.com/theos/theos'
           theos-sdks: 'https://github.com/theos/sdks'
           theos-sdks-branch: 'master'
 
+      - name: Set THEOS env
+        run: echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
+
       - name: Fetch only iPhoneOS26.4.sdk
-        env:
-          THEOS: ${{ github.workspace }}/theos
         run: |
           rm -rf sdkrepo
           git clone --filter=blob:none --no-checkout https://github.com/xybp888/iOS-SDKs.git sdkrepo
@@ -47,23 +48,17 @@ jobs:
           cp -R sdkrepo/iPhoneOS26.4.sdk "$THEOS/sdks/"
 
       - name: Show installed SDKs
-        env:
-          THEOS: ${{ github.workspace }}/theos
         run: |
           ls -la "$THEOS/sdks"
 
       - name: Verify iOS 26 SDK exists
-        env:
-          THEOS: ${{ github.workspace }}/theos
         run: |
           test -d "$THEOS/sdks/iPhoneOS26.4.sdk"
 
       - name: Build the tweak
-        env:
-          THEOS: ${{ github.workspace }}/theos
         run: |
-          make clean
-          make package FINALPACKAGE=1
+          gmake clean
+          gmake package FINALPACKAGE=1
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
