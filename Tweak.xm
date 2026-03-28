@@ -64,17 +64,48 @@
 %end
 
 // ======================
-// Real Liquid Glass (iOS 26) مع fallback آمن
+// Modern Window Retrieval (iOS 13+)
+// ======================
+static UIViewController *HSMTopViewControllerFrom(UIViewController *vc) {
+    if (!vc) return nil;
+    while (vc.presentedViewController) vc = vc.presentedViewController;
+    if ([vc isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *nav = (UINavigationController *)vc;
+        return HSMTopViewControllerFrom(nav.visibleViewController ?: nav.topViewController);
+    }
+    if ([vc isKindOfClass:[UITabBarController class]]) {
+        UITabBarController *tab = (UITabBarController *)vc;
+        return HSMTopViewControllerFrom(tab.selectedViewController);
+    }
+    return vc;
+}
+
+static UIWindow *HSMGetActiveKeyWindow(void) {
+    UIApplication *app = [UIApplication sharedApplication];
+    for (UIScene *scene in app.connectedScenes) {
+        if (![scene isKindOfClass:[UIWindowScene class]]) continue;
+        if (scene.activationState != UISceneActivationStateForegroundActive) continue;
+        UIWindowScene *windowScene = (UIWindowScene *)scene;
+        for (UIWindow *window in windowScene.windows) {
+            if (window.isKeyWindow) return window;
+        }
+        if (windowScene.windows.count > 0) return windowScene.windows.firstObject;
+    }
+    return nil;
+}
+
+// ======================
+// Real Liquid Glass Popup (iOS 26 style)
 // ======================
 %ctor {
     NSLog(@"🚀 WattpadNoAds v17 FINAL - All ads blocked + Real Liquid Glass");
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.8 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        UIWindow *window = HSMGetActiveKeyWindow();
         if (!window) return;
 
-        UIViewController *topVC = window.rootViewController;
-        while (topVC.presentedViewController) topVC = topVC.presentedViewController;
+        UIViewController *topVC = HSMTopViewControllerFrom(window.rootViewController);
+        if (!topVC) return;
 
         UIView *glassView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
         glassView.center = CGPointMake(window.bounds.size.width/2, window.bounds.size.height/2 - 30);
@@ -82,7 +113,7 @@
         glassView.layer.masksToBounds = YES;
         glassView.alpha = 0;
 
-        // Real Liquid Glass إذا كان الجهاز iOS 26+
+        // Liquid Glass Effect
         if (@available(iOS 26.0, *)) {
             UIGlassEffect *glassEffect = [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
             UIVisualEffectView *glassBlur = [[UIVisualEffectView alloc] initWithEffect:glassEffect];
@@ -90,7 +121,6 @@
             glassBlur.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             [glassView addSubview:glassBlur];
         } else {
-            // Fallback أفضل blur ممكن
             UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
             UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blur];
             blurView.frame = glassView.bounds;
@@ -127,7 +157,6 @@
 
         [window addSubview:glassView];
 
-        // Animation
         glassView.transform = CGAffineTransformMakeScale(0.85, 0.85);
         [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.75 initialSpringVelocity:0.6 options:0 animations:^{
             glassView.alpha = 1;
