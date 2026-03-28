@@ -3,7 +3,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 
 // ======================
-// إخفاء كل الإعلانات (كما نجح سابقاً)
+// إخفاء كل الإعلانات
 // ======================
 @interface GADBannerView : UIView @end
 @interface GADInterstitialAd : NSObject @end
@@ -64,10 +64,10 @@
 %end
 
 // ======================
-// Custom Glass Popup (iOS 26 Liquid Glass Style)
+// Liquid Glass Popup (iOS 26 style)
 // ======================
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v16 FINAL - All ads blocked + Modern Glass Message");
+    NSLog(@"🚀 WattpadNoAds v16 FINAL - All ads blocked + Liquid Glass Message");
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.8 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         UIWindow *window = [UIApplication sharedApplication].keyWindow;
@@ -76,61 +76,68 @@
         UIViewController *topVC = window.rootViewController;
         while (topVC.presentedViewController) topVC = topVC.presentedViewController;
 
-        // ──────── Glass Container ────────
-        UIView *glassView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 180)];
-        glassView.center = CGPointMake(window.bounds.size.width/2, window.bounds.size.height/2);
-        glassView.layer.cornerRadius = 24;
-        glassView.layer.masksToBounds = YES;
-        glassView.alpha = 0;
+        // Glass Container
+        UIView *glass = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
+        glass.center = CGPointMake(window.bounds.size.width/2, window.bounds.size.height/2 - 30);
+        glass.layer.cornerRadius = 28;
+        glass.layer.masksToBounds = YES;
+        glass.alpha = 0;
 
-        // Blur + Vibrancy (Liquid Glass)
-        UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+        // Liquid Glass Effect
+        UIBlurEffect *blur;
+        if (@available(iOS 13.0, *)) {
+            blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+        } else {
+            blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+        }
+
         UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blur];
-        blurView.frame = glassView.bounds;
+        blurView.frame = glass.bounds;
         blurView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [glassView addSubview:blurView];
+        [glass addSubview:blurView];
 
+        // Vibrancy للنص (يجعله أكثر شفافية ولمعان)
         UIVibrancyEffect *vibrancy = [UIVibrancyEffect effectForBlurEffect:blur];
         UIVisualEffectView *vibrancyView = [[UIVisualEffectView alloc] initWithEffect:vibrancy];
-        vibrancyView.frame = glassView.bounds;
+        vibrancyView.frame = glass.bounds;
         vibrancyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
         // Title
-        UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 20, 280, 28)];
-        titleLabel.text = @"Wattpad No Ads";
-        titleLabel.textAlignment = NSTextAlignmentCenter;
-        titleLabel.font = [UIFont systemFontOfSize:20 weight:UIFontWeightSemibold];
-        titleLabel.textColor = [UIColor whiteColor];
-        [vibrancyView.contentView addSubview:titleLabel];
+        UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(20, 25, 280, 32)];
+        title.text = @"Wattpad No Ads";
+        title.textAlignment = NSTextAlignmentCenter;
+        title.font = [UIFont systemFontOfSize:22 weight:UIFontWeightSemibold];
+        title.textColor = [UIColor whiteColor];
+        [vibrancyView.contentView addSubview:title];
 
         // Message
-        UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 55, 280, 70)];
-        msgLabel.text = @"✅ التويك شغال 100%%\ninstagram: hsm__200";
-        msgLabel.textAlignment = NSTextAlignmentCenter;
-        msgLabel.numberOfLines = 0;
-        msgLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
-        msgLabel.textColor = [UIColor whiteColor];
-        [vibrancyView.contentView addSubview:msgLabel];
+        UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(20, 65, 280, 80)];
+        msg.text = @"✅ التويك شغال 100%%\ninstagram: hsm__200";
+        msg.textAlignment = NSTextAlignmentCenter;
+        msg.numberOfLines = 0;
+        msg.font = [UIFont systemFontOfSize:16.5 weight:UIFontWeightMedium];
+        msg.textColor = [UIColor whiteColor];
+        [vibrancyView.contentView addSubview:msg];
 
-        [glassView addSubview:vibrancyView];
+        [glass addSubview:vibrancyView];
 
-        // Modern OK Button
-        UIButton *okButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        okButton.frame = CGRectMake(40, 135, 240, 44);
-        [okButton setTitle:@"OK" forState:UIControlStateNormal];
-        okButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
-        okButton.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
-        okButton.layer.cornerRadius = 22;
-        [okButton addTarget:glassView action:@selector(removeFromSuperview) forControlEvents:UIControlEventTouchUpInside];
-        [glassView addSubview:okButton];
+        // OK Button (شفاف وحديث)
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
+        btn.frame = CGRectMake(35, 150, 250, 48);
+        [btn setTitle:@"OK" forState:UIControlStateNormal];
+        btn.titleLabel.font = [UIFont systemFontOfSize:18 weight:UIFontWeightSemibold];
+        btn.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.18];
+        btn.layer.cornerRadius = 24;
+        [btn addTarget:glass action:@selector(removeFromSuperview) forControlEvents:UIControlEventTouchUpInside];
+        [glass addSubview:btn];
 
-        [window addSubview:glassView];
+        [window addSubview:glass];
 
-        // Animation
-        glassView.transform = CGAffineTransformMakeScale(0.8, 0.8);
-        [UIView animateWithDuration:0.4 delay:0 usingSpringWithDamping:0.8 initialSpringVelocity:0.5 options:0 animations:^{
-            glassView.alpha = 1;
-            glassView.transform = CGAffineTransformIdentity;
+        // Animation ناعمة
+        glass.transform = CGAffineTransformMakeScale(0.8, 0.8);
+        [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.75 initialSpringVelocity:0.6 options:0 animations:^{
+            glass.alpha = 1;
+            glass.transform = CGAffineTransformIdentity;
         } completion:nil];
     });
 }
