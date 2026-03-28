@@ -32,19 +32,18 @@
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; }
 %end
 
-// دالة مساعدة تبحث داخل كل الـ subviews بشكل عميق
-static void hideThingsBookAd(UIView *view) {
+// دالة بحث عميقة جداً
+static void scanAndHideThingsBookAd(UIView *view) {
     if (!view) return;
 
     NSString *className = NSStringFromClass([view class]);
 
-    if ([className containsString:@"Things"] ||
-        [className containsString:@"Journal"] ||
-        [className containsString:@"Promotion"] ||
-        [className containsString:@"Ad"] ||
+    if ([className containsString:@"Things"] || 
+        [className containsString:@"Journal"] || 
+        [className containsString:@"Promotion"] || 
+        [className containsString:@"Ad"] || 
         [className containsString:@"Banner"]) {
 
-        // نبحث داخل النصوص
         for (UIView *child in view.subviews) {
             if ([child isKindOfClass:[UILabel class]]) {
                 UILabel *label = (UILabel *)child;
@@ -55,36 +54,28 @@ static void hideThingsBookAd(UIView *view) {
                     [text containsString:@"veD3"] ||
                     [text containsString:@"onelink"]) {
 
-                    NSLog(@"[WattpadNoAds] BLOCKED ThingsBook House Ad (recursive)!");
+                    NSLog(@"[WattpadNoAds] BLOCKED ThingsBook House Ad (v13 timer)!");
                     view.hidden = YES;
                     view.alpha = 0;
                     [view removeFromSuperview];
                     return;
                 }
             }
-            hideThingsBookAd(child); // بحث عميق
+            scanAndHideThingsBookAd(child);
         }
     }
 }
 
-// الـ hooks القوية
-%hook UIView
-- (void)addSubview:(UIView *)subview {
-    %orig(subview);
-    hideThingsBookAd(subview);
-}
-
-- (void)insertSubview:(UIView *)subview atIndex:(NSInteger)index {
-    %orig(subview, index);
-    hideThingsBookAd(subview);
-}
-
-- (void)bringSubviewToFront:(UIView *)subview {
-    %orig(subview);
-    hideThingsBookAd(subview);
-}
-%end
-
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v12 FINAL - ThingsBook house ads blocked recursively!");
+    NSLog(@"🚀 WattpadNoAds v13 FINAL - Timer scanning for ThingsBook ad!");
+
+    // timer يراقب الشاشة كل 0.5 ثانية
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:YES block:^(NSTimer *timer) {
+            UIViewController *root = [UIApplication sharedApplication].keyWindow.rootViewController;
+            if (root && root.view) {
+                scanAndHideThingsBookAd(root.view);
+            }
+        }];
+    });
 }
