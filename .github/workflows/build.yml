@@ -1,4 +1,4 @@
-name: Build WattpadNoAds (iOS 26 SDK fixed)
+name: Build WattpadNoAds
 
 on:
   push:
@@ -7,11 +7,17 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-26
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Select Xcode 26.4
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.4.app/Contents/Developer
+          xcodebuild -version
+          xcode-select -p
 
       - name: Cache Theos
         uses: actions/cache@v4
@@ -33,29 +39,7 @@ jobs:
       - name: Set THEOS env
         run: echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
 
-      - name: Fetch only iPhoneOS26.4.sdk
-        run: |
-          rm -rf sdkrepo
-          git clone --filter=blob:none --no-checkout https://github.com/xybp888/iOS-SDKs.git sdkrepo
-          cd sdkrepo
-          git sparse-checkout init --cone
-          git sparse-checkout set iPhoneOS26.4.sdk
-          git checkout master
-          cd ..
-
-          mkdir -p "$THEOS/sdks"
-          rm -rf "$THEOS/sdks"/iPhoneOS26*.sdk
-          cp -R sdkrepo/iPhoneOS26.4.sdk "$THEOS/sdks/"
-
-      - name: Show installed SDKs
-        run: |
-          ls -la "$THEOS/sdks"
-
-      - name: Verify iOS 26 SDK exists
-        run: |
-          test -d "$THEOS/sdks/iPhoneOS26.4.sdk"
-
-      - name: Build the tweak
+      - name: Build
         run: |
           gmake clean
           gmake package FINALPACKAGE=1
