@@ -64,10 +64,10 @@
 %end
 
 // ======================
-// Custom Liquid Glass Popup (أقرب شكل ممكن)
+// Liquid Glass Popup حقيقي (iOS 26)
 // ======================
 %ctor {
-    NSLog(@"🚀 WattpadNoAds v16 FINAL - All ads blocked + Liquid Glass Message");
+    NSLog(@"🚀 WattpadNoAds v17 FINAL - All ads blocked + Real Liquid Glass");
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.8 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         UIWindow *window = [UIApplication sharedApplication].keyWindow;
@@ -76,46 +76,47 @@
         UIViewController *topVC = window.rootViewController;
         while (topVC.presentedViewController) topVC = topVC.presentedViewController;
 
+        // Glass Container
         UIView *glassView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
         glassView.center = CGPointMake(window.bounds.size.width/2, window.bounds.size.height/2 - 30);
         glassView.layer.cornerRadius = 28;
         glassView.layer.masksToBounds = YES;
         glassView.alpha = 0;
 
-        UIBlurEffect *blur;
-        if (@available(iOS 13.0, *)) {
-            blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+        // Real Liquid Glass Effect
+        if (@available(iOS 26.0, *)) {
+            UIGlassEffect *glassEffect = [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
+            UIVisualEffectView *glassBlur = [[UIVisualEffectView alloc] initWithEffect:glassEffect];
+            glassBlur.frame = glassView.bounds;
+            glassBlur.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            [glassView addSubview:glassBlur];
         } else {
-            blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            // Fallback للإصدارات الأقدم
+            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+            UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blur];
+            blurView.frame = glassView.bounds;
+            blurView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            [glassView addSubview:blurView];
         }
 
-        UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blur];
-        blurView.frame = glassView.bounds;
-        blurView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [glassView addSubview:blurView];
-
-        UIVibrancyEffect *vibrancy = [UIVibrancyEffect effectForBlurEffect:blur];
-        UIVisualEffectView *vibrancyView = [[UIVisualEffectView alloc] initWithEffect:vibrancy];
-        vibrancyView.frame = glassView.bounds;
-        vibrancyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
+        // Title
         UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(20, 25, 280, 32)];
         title.text = @"Wattpad No Ads";
         title.textAlignment = NSTextAlignmentCenter;
         title.font = [UIFont systemFontOfSize:22 weight:UIFontWeightSemibold];
         title.textColor = [UIColor whiteColor];
-        [vibrancyView.contentView addSubview:title];
+        [glassView addSubview:title];
 
+        // Message
         UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(20, 65, 280, 80)];
         msg.text = @"✅ التويك شغال 100%%\ninstagram: hsm__200";
         msg.textAlignment = NSTextAlignmentCenter;
         msg.numberOfLines = 0;
         msg.font = [UIFont systemFontOfSize:16.5 weight:UIFontWeightMedium];
         msg.textColor = [UIColor whiteColor];
-        [vibrancyView.contentView addSubview:msg];
+        [glassView addSubview:msg];
 
-        [glassView addSubview:vibrancyView];
-
+        // OK Button
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
         btn.frame = CGRectMake(35, 150, 250, 48);
         [btn setTitle:@"OK" forState:UIControlStateNormal];
@@ -127,6 +128,7 @@
 
         [window addSubview:glassView];
 
+        // Animation
         glassView.transform = CGAffineTransformMakeScale(0.85, 0.85);
         [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.75 initialSpringVelocity:0.6 options:0 animations:^{
             glassView.alpha = 1;
