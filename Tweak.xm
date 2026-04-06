@@ -2,7 +2,34 @@
 #import <UIKit/UIKit.h>
 
 // ======================
-// PREMIUM UNLOCK ONLY
+// تعريفات الكلاسات (مهمة عشان ما يطلع forward declaration error)
+// ======================
+@interface WPUser : NSObject
+- (BOOL)isPremium;
+- (BOOL)hasPremium;
+- (BOOL)isSubscribed;
+@end
+
+@interface WPPremiumManager : NSObject
+- (BOOL)isPremiumUser;
+- (BOOL)userHasPremiumAccess;
+- (BOOL)canAccessPremiumFeatures;
+@end
+
+@interface WPSubscription : NSObject
+- (BOOL)isActive;
+@end
+
+@interface WPPaywallViewController : UIViewController
+@end
+
+@interface WPReadingViewController : UIViewController
+- (BOOL)shouldShowPaywall;
+- (BOOL)hasPremiumAccess;
+@end
+
+// ======================
+// PREMIUM UNLOCK
 // ======================
 
 %hook WPUser
