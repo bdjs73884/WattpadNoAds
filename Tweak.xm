@@ -60,18 +60,47 @@
 }
 %end
 
+// ======================
+// إخفاء إعلان التعليقات (النسخة القوية v2)
+// ======================
 %hook WPCommentAdBannerCell
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    self = %orig;
+    if (self) {
+        self.hidden = YES;
+        self.alpha = 0;
+        NSLog(@"[WattpadNoAds] WPCommentAdBannerCell → initWithStyle → Hidden");
+    }
+    return self;
+}
+
+- (void)awakeFromNib {
+    %orig;
+    self.hidden = YES;
+    self.alpha = 0;
+    NSLog(@"[WattpadNoAds] WPCommentAdBannerCell → awakeFromNib → Hidden");
+}
 
 - (void)layoutSubviews {
     %orig;
-    self.hidden = YES; // نخفي المحتوى مال الإعلان
+    self.hidden = YES;
+    self.alpha = 0;
+    self.contentView.hidden = YES;
+    self.contentView.alpha = 0;
+    NSLog(@"[WattpadNoAds] WPCommentAdBannerCell → layoutSubviews → Hidden");
 }
 
-- (void)setFrame:(CGRect)frame {
-    // نصفر ارتفاع الخلية حتى نسد الفراغ بالكامل
-    CGRect newFrame = frame;
-    newFrame.size.height = 0;
-    %orig(newFrame);
+- (void)didMoveToSuperview {
+    %orig;
+    if (self.superview) {
+        [self removeFromSuperview];
+        NSLog(@"[WattpadNoAds] WPCommentAdBannerCell → Removed from superview");
+    }
+}
+
+- (void)setHidden:(BOOL)hidden {
+    %orig(YES);   // نجبره دائماً يكون مخفي
 }
 
 %end
