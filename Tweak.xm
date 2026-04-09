@@ -59,6 +59,24 @@
 }
 %end
 
+// مرات تحتاج تكتب اسم الكلاس كامل ويه اسم الموديول إذا جان Swift
+%hook ReaderInterstitialView 
+
+- (void)layoutSubviews {
+    %orig;
+    self.hidden = YES; // إخفاء الإعلان
+}
+
+- (void)setFrame:(CGRect)frame {
+    // تصفير حجم الإعلان حتى ما يترك مساحة فارغة (فراغ أسود)
+    CGRect newFrame = frame;
+    newFrame.size.height = 0;
+    %orig(newFrame);
+}
+
+%end
+
+
 // ======================
 // الكود اللي أرسلته (بالضبط)
 // ======================
