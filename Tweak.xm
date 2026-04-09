@@ -12,6 +12,7 @@
 @interface GADAdView : UIView @end
 @interface IMAWebUIViewController : UIViewController @end
 @interface WKCompositingView : UIView @end
+@interface ReaderInterstitialView : UIView @end
 
 %hook GADBannerView
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; self.frame = CGRectZero; }
@@ -64,17 +65,17 @@
 
 - (void)layoutSubviews {
     %orig;
-    self.hidden = YES; // إخفاء الإعلان
+    self.hidden = YES;
 }
 
 - (void)setFrame:(CGRect)frame {
-    // تصفير حجم الإعلان حتى ما يترك مساحة فارغة (فراغ أسود)
     CGRect newFrame = frame;
     newFrame.size.height = 0;
     %orig(newFrame);
 }
 
 %end
+
 
 
 // ======================
