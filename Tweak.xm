@@ -12,7 +12,7 @@
 @interface GADAdView : UIView @end
 @interface IMAWebUIViewController : UIViewController @end
 @interface WKCompositingView : UIView @end
-@interface ReaderInterstitialView : UIView @end
+@interface WPCommentAdBannerCell : UITableViewCell @end
 
 %hook GADBannerView
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; self.frame = CGRectZero; }
@@ -60,23 +60,21 @@
 }
 %end
 
-// مرات تحتاج تكتب اسم الكلاس كامل ويه اسم الموديول إذا جان Swift
-%hook ReaderInterstitialView 
+%hook WPCommentAdBannerCell
 
 - (void)layoutSubviews {
     %orig;
-    self.hidden = YES;
+    self.hidden = YES; // نخفي المحتوى مال الإعلان
 }
 
 - (void)setFrame:(CGRect)frame {
+    // نصفر ارتفاع الخلية حتى نسد الفراغ بالكامل
     CGRect newFrame = frame;
     newFrame.size.height = 0;
     %orig(newFrame);
 }
 
 %end
-
-
 
 // ======================
 // الكود اللي أرسلته (بالضبط)
