@@ -15,15 +15,27 @@
 @interface WPCommentAdBannerCell : UITableViewCell @end
 @interface AppDelegate : UIView @end
 
-
-
 %hook AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     BOOL result = %orig;
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        UIWindow *window = application.keyWindow;
+        UIWindow *window = nil;
+        for (UIScene *scene in application.connectedScenes) {
+            if (scene.activationState == UISceneActivationStateForegroundActive &&
+                [scene isKindOfClass:[UIWindowScene class]]) {
+                UIWindowScene *windowScene = (UIWindowScene *)scene;
+                for (UIWindow *w in windowScene.windows) {
+                    if (w.isKeyWindow) {
+                        window = w;
+                        break;
+                    }
+                }
+            }
+            if (window) break;
+        }
+        if (!window) return;
         UIViewController *rootVC = window.rootViewController;
 
         while (rootVC.presentedViewController) {
