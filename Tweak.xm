@@ -2,9 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-// ======================
-// إخفاء كل الإعلانات
-// ======================
+@interface Wattpad.WPCommentAdBannerCell : UITableViewCell @end
 @interface GADBannerView : UIView @end
 @interface GADInterstitialAd : NSObject @end
 @interface GADNativeAdView : UIView @end
@@ -13,6 +11,15 @@
 @interface IMAWebUIViewController : UIViewController @end
 @interface WKCompositingView : UIView @end
 @interface WPCommentAdBannerCell : UITableViewCell @end
+
+%hook Wattpad.WPCommentAdBannerCell
+- (void)didmMoveToWindow {
+    %orig;
+    self.hidden = YES;
+    NSLog(@"Wattpad.WPCommentAdBannerCell didMoveToWindow");
+}
+
+%end
 
 %hook GADBannerView
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; self.frame = CGRectZero; }
