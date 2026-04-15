@@ -12,11 +12,19 @@
 @interface WKCompositingView : UIView @end
 @interface WPCommentAdBannerCell : UITableViewCell @end
 
-%hook Wattpad.WPCommentAdBannerCell
-- (void)didmMoveToWindow {
+%hook #import <objc/runtime.h>
+
+%hook WPCommentAdBannerCell
+
+- (void)didMoveToWindow {
     %orig;
     self.hidden = YES;
-    NSLog(@"Wattpad.WPCommentAdBannerCell didMoveToWindow");
+}
+
+%end
+
+%ctor {
+    %init(WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"));
 }
 
 %end
@@ -70,17 +78,6 @@
 // ======================
 // إخفاء إعلان التعليقات (النسخة القوية v2)
 // ======================
-%hook WPCommentAdBannerCell
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = %orig;
-    if (self) {
-        self.hidden = YES;
-        self.alpha = 0;
-        NSLog(@"[WattpadNoAds] WPCommentAdBannerCell → initWithStyle → Hidden");
-    }
-    return self;
-}
 
 - (void)awakeFromNib {
     %orig;
