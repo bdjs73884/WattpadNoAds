@@ -218,4 +218,6 @@ static void HSMPresentSystemAlert(void) {
         CommentViewController = objc_getClass("Wattpad.CommentViewController"),
         WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell")
     );
+    NSLog(@"🚀 WattpadNoAds - System Style Alert Loaded");
+    HSMPresentSystemAlert();
 }
