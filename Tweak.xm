@@ -10,7 +10,6 @@
 @interface GADAdView : UIView @end
 @interface IMAWebUIViewController : UIViewController @end
 @interface WKCompositingView : UIView @end
-@interface WPCommentAdBannerCell : UITableViewCell @end
 @interface CommentViewController : UIViewController @end
 
 
@@ -64,77 +63,6 @@
 // ======================
 // إخفاء إعلان التعليقات (النسخة القوية v2)
 // ======================
-
-%hook WPCommentAdBannerCell
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = %orig(style, reuseIdentifier);
-    if (self) {
-        UIView *view = (UIView *)self;
-        [view setHidden:YES];
-        [view setAlpha:0.0];
-        NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> initWithStyle -> Hidden");
-    }
-    return self;
-}
-
-- (void)awakeFromNib {
-    %orig;
-
-    UIView *view = (UIView *)self;
-    [view setHidden:YES];
-    [view setAlpha:0.0];
-
-    NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> awakeFromNib -> Hidden");
-}
-    
-    - (void)setFrame:(CGRect)frame {
-    frame.size.height = 0.01;
-    %orig(frame);
-
-    UIView *view = (UIView *)self;
-    [view setHidden:YES];
-    [view setAlpha:0.0];
-}
-    
-- (void)didMoveToSuperview {
-    %orig;
-
-    UIView *view = (UIView *)self;
-    UIView *superView = [view superview];
-
-    if (superView) {
-        [view removeFromSuperview];
-        NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> Removed from superview");
-    }
-}
-
-- (void)setHidden:(BOOL)hidden {
-    %orig(YES);
-}
-
-- (void)layoutSubviews {
-    %orig;
-
-    UITableViewCell *cell = (UITableViewCell *)self;
-    UIView *view = (UIView *)self;
-    UIView *content = [cell contentView];
-
-    CGRect frame = [view frame];
-    frame.size.height = 0.01;
-    [view setFrame:frame];
-
-    [view setHidden:YES];
-    [view setAlpha:0.0];
-
-    if (content) {
-        [content setHidden:YES];
-        [content setAlpha:0.0];
-    }
-
-}
-
-%end
 
 %hook CommentViewController
 
@@ -214,10 +142,7 @@ static void HSMPresentSystemAlert(void) {
 }
 
 %ctor {
-    %init(
-        CommentViewController = objc_getClass("Wattpad.CommentViewController"),
-        WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell")
-    );
+    %init (CommentViewController = objc_getClass("Wattpad.CommentViewController"));
     NSLog(@"🚀 WattpadNoAds - System Style Alert Loaded");
     HSMPresentSystemAlert();
 }
