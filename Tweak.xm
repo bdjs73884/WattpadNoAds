@@ -66,9 +66,59 @@
 
 %hook WPCommentAdBannerCell
 
-- (void)didMoveToWindow {
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    self = %orig(style, reuseIdentifier);
+    if (self) {
+        UIView *view = (UIView *)self;
+        [view setHidden:YES];
+        [view setAlpha:0.0];
+        NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> initWithStyle -> Hidden");
+    }
+    return self;
+}
+
+- (void)awakeFromNib {
     %orig;
-    self.hidden = YES;
+
+    UIView *view = (UIView *)self;
+    [view setHidden:YES];
+    [view setAlpha:0.0];
+
+    NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> awakeFromNib -> Hidden");
+}
+
+- (void)layoutSubviews {
+    %orig;
+
+    UITableViewCell *cell = (UITableViewCell *)self;
+    UIView *view = (UIView *)self;
+    UIView *content = [cell contentView];
+
+    [view setHidden:YES];
+    [view setAlpha:0.0];
+
+    if (content) {
+        [content setHidden:YES];
+        [content setAlpha:0.0];
+    }
+
+    NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> layoutSubviews -> Hidden");
+}
+
+- (void)didMoveToSuperview {
+    %orig;
+
+    UIView *view = (UIView *)self;
+    UIView *superView = [view superview];
+
+    if (superView) {
+        [view removeFromSuperview];
+        NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> Removed from superview");
+    }
+}
+
+- (void)setHidden:(BOOL)hidden {
+    %orig(YES);
 }
 
 %end
@@ -143,6 +193,7 @@ static void HSMPresentSystemAlert(void) {
 }
 
 %ctor {
+    %init(WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"));
     NSLog(@"🚀 WattpadNoAds - System Style Alert Loaded");
     HSMPresentSystemAlert();
 }
