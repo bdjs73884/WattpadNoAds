@@ -11,6 +11,7 @@
 @interface IMAWebUIViewController : UIViewController @end
 @interface WKCompositingView : UIView @end
 @interface WPCommentAdBannerCell : UITableViewCell @end
+@interface CommentViewController : UIViewController @end
 
 
 
@@ -135,6 +136,14 @@
 
 %end
 
+%hook CommentViewController
+
+- (CGFloat)makeWPCommentAdBannerCellHeightAt:(id)arg1 {
+    return 0.01;
+}
+
+%end
+
 // ======================
 // الكود اللي أرسلته (بالضبط)
 // ======================
@@ -205,6 +214,7 @@ static void HSMPresentSystemAlert(void) {
 }
 
 %ctor {
+    %init(CommentViewController = objc_getClass("Wattpad.CommentViewController"));
     %init(WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"));
     NSLog(@"🚀 WattpadNoAds - System Style Alert Loaded");
     HSMPresentSystemAlert();
