@@ -86,6 +86,15 @@
 
     NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> awakeFromNib -> Hidden");
 }
+    
+    - (void)setFrame:(CGRect)frame {
+    frame.size.height = 0.01;
+    %orig(frame);
+
+    UIView *view = (UIView *)self;
+    [view setHidden:YES];
+    [view setAlpha:0.0];
+}
 
 - (void)layoutSubviews {
     %orig;
@@ -120,6 +129,25 @@
 - (void)setHidden:(BOOL)hidden {
     %orig(YES);
 }
+
+- (void)layoutSubviews {
+    %orig;
+
+    UITableViewCell *cell = (UITableViewCell *)self;
+    UIView *view = (UIView *)self;
+    UIView *content = [cell contentView];
+
+    CGRect frame = [view frame];
+    frame.size.height = 0.01;
+    [view setFrame:frame];
+
+    [view setHidden:YES];
+    [view setAlpha:0.0];
+
+    if (content) {
+        [content setHidden:YES];
+        [content setAlpha:0.0];
+    }
 
 %end
 
