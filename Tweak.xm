@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import <objc/runtime.h>
 
 @interface GADBannerView : UIView @end
 @interface GADInterstitialAd : NSObject @end
@@ -19,10 +20,6 @@
 }
 
 %end
-
-%ctor {
-    %init(WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"));
-}
 
 %hook GADBannerView
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; self.frame = CGRectZero; }
@@ -146,4 +143,5 @@ static void HSMPresentSystemAlert(void) {
 %ctor {
     NSLog(@"🚀 WattpadNoAds - System Style Alert Loaded");
     HSMPresentSystemAlert();
+    %init(WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"));
 }
