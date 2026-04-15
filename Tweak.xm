@@ -95,25 +95,7 @@
     [view setHidden:YES];
     [view setAlpha:0.0];
 }
-
-- (void)layoutSubviews {
-    %orig;
-
-    UITableViewCell *cell = (UITableViewCell *)self;
-    UIView *view = (UIView *)self;
-    UIView *content = [cell contentView];
-
-    [view setHidden:YES];
-    [view setAlpha:0.0];
-
-    if (content) {
-        [content setHidden:YES];
-        [content setAlpha:0.0];
-    }
-
-    NSLog(@"[WattpadNoAds] WPCommentAdBannerCell -> layoutSubviews -> Hidden");
-}
-
+    
 - (void)didMoveToSuperview {
     %orig;
 
