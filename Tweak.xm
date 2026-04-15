@@ -2,7 +2,6 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-@interface Wattpad.WPCommentAdBannerCell : UITableViewCell @end
 @interface GADBannerView : UIView @end
 @interface GADInterstitialAd : NSObject @end
 @interface GADNativeAdView : UIView @end
@@ -26,8 +25,6 @@
 %ctor {
     %init(WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"));
 }
-
-%end
 
 %hook GADBannerView
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; self.frame = CGRectZero; }
