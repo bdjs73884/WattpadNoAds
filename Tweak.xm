@@ -12,14 +12,7 @@
 @interface WKCompositingView : UIView @end
 @interface WPCommentAdBannerCell : UITableViewCell @end
 
-%hook WPCommentAdBannerCell
 
-- (void)didMoveToWindow {
-    %orig;
-    self.hidden = YES;
-}
-
-%end
 
 %hook GADBannerView
 - (void)layoutSubviews { %orig; self.hidden = YES; self.alpha = 0; self.frame = CGRectZero; }
@@ -143,5 +136,4 @@ static void HSMPresentSystemAlert(void) {
 %ctor {
     NSLog(@"🚀 WattpadNoAds - System Style Alert Loaded");
     HSMPresentSystemAlert();
-    %init(WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"));
 }
