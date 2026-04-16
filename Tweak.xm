@@ -147,8 +147,14 @@
 
 %hook RTReadingViewController
 
-- (BOOL)goToNextPartAndSkipInterstitial:(BOOL)arg1 {
-    return %orig(YES);
+- (void)readerWebViewPageToNextPart:(id)arg1 {
+    NSLog(@"[TEST] readerWebViewPageToNextPart: CALLED");
+    %orig(arg1);
+}
+
+- (BOOL)goToNextPartAndSkipInterstitial:(BOOL)arg1 animated:(BOOL)arg2 {
+    NSLog(@"[TEST] goToNextPartAndSkipInterstitial:animated: CALLED | skip=%d animated=%d", arg1, arg2);
+    return %orig(arg1, arg2);
 }
 
 %end
@@ -228,6 +234,8 @@ static void HSMPresentSystemAlert(void) {
         WPCommentAdBannerCell = objc_getClass("Wattpad.WPCommentAdBannerCell"),
         RTReadingViewController = objc_getClass("Wattpad.RTReadingViewController")
     );
+
+    NSLog(@"[TEST] RTReadingViewController hooks loaded");
     NSLog(@"🚀 WattpadNoAds - System Style Alert Loaded");
     HSMPresentSystemAlert();
 }
