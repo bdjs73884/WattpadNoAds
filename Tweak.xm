@@ -8,7 +8,7 @@
 
 - (BOOL)canShowDisplayAdsInInterstitials {
     NSLog(@"[TEST] forcing canShowDisplayAdsInInterstitials = YES");
-    return YES;
+    return NO;
 }
 
 %end
